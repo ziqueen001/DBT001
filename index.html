@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پرداخت آنلاین</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
+        button { 
+            background-color: #28a745; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 18px; 
+            border-radius: 5px;
+        }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+    <h2>درگاه پرداخت آنلاین</h2>
+    <p>برای پرداخت، روی دکمه زیر کلیک کنید:</p>
+    <button onclick="startPayment()">پرداخت</button>
+
+    <script>
+        function startPayment() {
+            fetch("https://api.zarinpal.com/pg/v4/payment/request.json", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    merchant_id: "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",  // 🔹 این مقدار را از درگاه دریافت کنید
+                    amount: 100000,  // 💰 مبلغ پرداخت (به تومان)
+                    callback_url: "https://your-site.com/payment/callback", // 🔗 لینک بازگشت به سایت شما
+                    description: "خرید محصول X"
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.data && data.data.code === 100) {
+                    window.location.href = `https://www.zarinpal.com/pg/StartPay/${data.data.authority}`;
+                } else {
+                    alert("خطا در پرداخت: " + JSON.stringify(data.errors));
+                }
+            })
+            .catch(error => console.error("خطا در اتصال:", error));
+        }
+    </script>
+
+</body>
+</html>
